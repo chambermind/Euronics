@@ -1,0 +1,30 @@
+from bs4 import BeautifulSoup as soup
+from urllib.request import urlopen as uReq
+
+page_url = "https://www.euronics.lv/products-en/s/525/computers-and-tablets/tablets"
+uClient = uReq(page_url)
+page_soup = soup(uClient.read(), "html.parser")
+uClient.close()
+containers = page_soup.findAll("div", {"class": "oi-product-thumb product clear"})
+
+filename = "Euronics.csv"
+f = open(filename, "w")
+
+headers = "Product name, Price discount, Monthly payment \n"
+
+f.write(headers)
+for container in containers:
+   title_container = container.findAll("h3", {"class": "name"})
+   product_name = title_container[0].text.strip()
+   price_discount = container.findAll("span", {"class": "cp"})[0].text.strip().replace("€", " ").replace(".", " ")
+   monthly_payment = container.findAll("p", {"class": "monthly-payment"})[0].text.strip().replace("24 months", " ").replace("€", " ")
+   #print(price_discount)
+
+   print("product_name: " + product_name + "\n")
+   print("price_discount: " + price_discount + "\n")
+   print("monthly_payment: " + monthly_payment + "\n")
+
+   f.write(product_name + ", " + price_discount + ", " + monthly_payment + "\n")
+
+f.close()
+# print(brand)
